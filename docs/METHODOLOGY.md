@@ -190,3 +190,26 @@ the final percentages noticeably.
 ## Failure Recovery: The Split Bug
 
 During Stage 5, the initial data split used a standard row-level `train_test_split` stratified by label. This inadvertently shattered multi-transaction sequences across the train and test sets. As a result, large cashout transactions in the test set lost their preceding small-burst context (which ended up in the train set), causing point-in-time features like velocity and burst ratio to fail and resulting in near-random test performance. The fix was to replace the row-level split with a group-aware split (`GroupShuffleSplit` keyed on `sequence_id`), ensuring entire sequences land strictly in either train or test to preserve chronological context for feature extraction.
+
+## False-Positive Cost and Threshold Selection (Stage 9)
+
+In standard setups, a classification threshold defaults to 0.5. However, since the cost of a missed fraud case and a false alarm are highly unequal in a payment context, the threshold should be chosen to minimize the total expected cost.
+
+**Cost Assumptions:**
+- **False Positive (FP) Cost:** We estimate a false positive costs roughly **₹300**. This accounts for the lost margin on a typical legitimate transaction, plus the operational cost of fielding a customer support ticket for the wrongly blocked payment, plus the marginal risk of customer churn.
+- **False Negative (FN) Cost:** We estimate a missed fraud case costs **₹5,500**. This assumes the fraudulent "cashout" averages ₹5,000, plus a standard ₹500 chargeback fee imposed on the merchant.
+
+Given these figures, a missed fraud case is approximately 18 times more expensive than a false alarm.
+
+**Threshold Selection:**
+We evaluated every possible decision threshold on the held-out test set using a Precision-Recall Curve. 
+- At the default threshold of `0.5`, the model produced 11 true positives and 48 false positives, leaving 4 missed frauds.
+- By evaluating the total cost function `(FP * ₹300) + (FN * ₹5,500)`, the optimal threshold was found to be **0.5514**.
+- Moving the threshold up to `0.5514` reduced false positives to 44 (saving ₹1,200) without reducing true positives (11 caught, 4 missed). 
+
+**Metrics at Chosen Threshold (0.5514):**
+- **Precision:** 0.2000
+- **Recall:** 0.7333
+- **F1 Score:** 0.3143
+
+The relatively low precision is an expected consequence of the heavy class imbalance (~4% fraud) and the explicit priority given to recall based on the 18:1 cost asymmetry.
