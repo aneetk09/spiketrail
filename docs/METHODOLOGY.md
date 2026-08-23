@@ -201,15 +201,18 @@ In standard setups, a classification threshold defaults to 0.5. However, since t
 
 Given these figures, a missed fraud case is approximately 18 times more expensive than a false alarm.
 
-**Threshold Selection:**
-We evaluated every possible decision threshold on the held-out test set using a Precision-Recall Curve. 
-- At the default threshold of `0.5`, the model produced 11 true positives and 48 false positives, leaving 4 missed frauds.
-- By evaluating the total cost function `(FP * ₹300) + (FN * ₹5,500)`, the optimal threshold was found to be **0.5514**.
-- Moving the threshold up to `0.5514` reduced false positives to 44 (saving ₹1,200) without reducing true positives (11 caught, 4 missed). 
+**Threshold Selection (OOF Validation):**
+To ensure the held-out test set remains strictly unseen during the decision-policy tuning, the optimal threshold was selected using **5-Fold Cross-Validation** on the training set (grouped by `sequence_id` to prevent sequence leakage).
 
-**Metrics at Chosen Threshold (0.5514):**
-- **Precision:** 0.2000
+We evaluated the total cost function `(FP * ₹300) + (FN * ₹5,500)` at every threshold from 0.0 to 1.0 on the out-of-fold validation predictions.
+- The cost curve (`docs/threshold_cost_curve.png`) shows the minimum expected cost occurs at a threshold of **0.4335**.
+- While the 18:1 cost asymmetry heavily favors recall, dropping the threshold below 0.4335 generates a steep spike in false positives that mathematically outweighs the cost of the remaining missed frauds.
+
+**Final Held-Out Test Evaluation at Chosen Threshold (0.4335):**
+Once the threshold was locked in, it was applied exactly once to the held-out test set.
+- **Precision:** 0.1692
 - **Recall:** 0.7333
-- **F1 Score:** 0.3143
+- **F1 Score:** 0.2750
+- **Confusion Matrix:** 11 True Positives, 54 False Positives, 323 True Negatives, 4 False Negatives.
 
-The relatively low precision is an expected consequence of the heavy class imbalance (~4% fraud) and the explicit priority given to recall based on the 18:1 cost asymmetry.
+Despite the lower threshold, the model still missed 4 sophisticated fraud cases. The precision drop (to 17%) reflects the aggressive tuning toward recall, accepting roughly 5 false alarms to catch 1 real fraud—a tradeoff perfectly aligned with the ₹5,500 vs ₹300 cost reality.
