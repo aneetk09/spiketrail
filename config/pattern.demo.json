@@ -1,0 +1,8 @@
+{
+  "_note": "Illustrative demo parameters only. These are not the private values used for SpikeTrail's reported precision/recall/F1 results.",
+  "min_small_transactions_in_burst": 3,
+  "max_small_transaction_amount_inr": 120,
+  "burst_window_minutes": 12,
+  "large_transaction_followup_window_minutes": 45,
+  "min_large_transaction_amount_inr": 4500
+}

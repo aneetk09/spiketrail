@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
 
-CONFIG_PATH = Path("config/pattern.local.json")
+DEFAULT_CONFIG_PATH = Path("config/pattern.demo.json")
+CONFIG_ENV_VAR = "SPIKETRAIL_PATTERN_CONFIG"
 
 
 @dataclass(frozen=True)
@@ -17,11 +19,16 @@ class PatternConfig:
     min_large_transaction_amount_inr: float
 
 
-def load_pattern_config(path: Path = CONFIG_PATH) -> PatternConfig:
+def load_pattern_config(path: Path | None = None) -> PatternConfig:
+    if path is None:
+        path = Path(os.getenv(CONFIG_ENV_VAR, str(DEFAULT_CONFIG_PATH)))
+
     if not path.exists():
         raise FileNotFoundError(
-            f"Missing private pattern config at {path}. "
-            "Create this gitignored file before generating synthetic data."
+            f"Missing pattern config at {path}. "
+            f"Set {CONFIG_ENV_VAR}=config/pattern.local.json for the private "
+            "reported-results config, or use the committed demo config for a "
+            "standalone pipeline run."
         )
 
     with path.open("r", encoding="utf-8") as config_file:

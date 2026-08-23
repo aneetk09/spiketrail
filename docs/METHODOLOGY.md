@@ -11,6 +11,31 @@ will add the synthetic-data rules, feature methodology, threshold choice,
 held-out test metrics, false-positive cost assumption, failure notes, and
 production-readiness limits.
 
+## Public Demo Config Vs. Private Reported-Results Config
+
+The repository is designed to run from a fresh clone without requiring private
+fraud-pattern thresholds. By default, the data generator reads
+`config/pattern.demo.json`, a committed file containing illustrative demo
+parameters. Those values prove that the pipeline can run end to end, but they
+are not the values used for SpikeTrail's reported precision, recall, F1, or
+confusion matrix.
+
+The reported results are generated from a separate run using
+`config/pattern.local.json`, which is intentionally gitignored. That file holds
+the exact burst count, time windows, and amount cutoffs selected for the
+project. Keeping those values out of the public repo is part of the
+defense-only design: the code is inspectable and runnable, while the sensitive
+configuration that could help someone tune around the detector is not
+published.
+
+To run with the private config locally:
+
+```text
+SPIKETRAIL_PATTERN_CONFIG=config/pattern.local.json python -m src.generate_data
+```
+
+To run the standalone public demo path, no override is required.
+
 ## Evaluation Vocabulary
 
 Every transaction in the held-out test set will have two values:

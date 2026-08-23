@@ -5,10 +5,13 @@ transactions from the same device/IP context followed soon after by a larger
 transaction. The project treats this as a card-testing-then-cashout shape,
 not as general-purpose fraud detection.
 
-The exact numeric values for burst count, small-transaction ceiling, burst
-window, follow-up window, and large-transaction floor are intentionally not
-published. They live in `config/pattern.local.json`, which is gitignored from
-the first commit that introduced sensitive local configuration paths.
+The exact numeric values used for reported results -- burst count,
+small-transaction ceiling, burst window, follow-up window, and
+large-transaction floor -- are intentionally not published. They live in
+`config/pattern.local.json`, which is gitignored from the first commit that
+introduced sensitive local configuration paths. The committed
+`config/pattern.demo.json` contains illustrative demo parameters only, so a
+fresh clone can still run the pipeline end to end.
 
 ## Public Rule Shape
 

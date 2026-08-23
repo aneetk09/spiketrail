@@ -20,8 +20,9 @@ The ground-truth `label` is per transaction:
   cases.
 
 The dataset target is about 2,000 transaction rows with about 4% fraud rows.
-The exact fraud-pattern numeric thresholds come from the gitignored local
-pattern config and must not be committed.
+The exact fraud-pattern numeric thresholds for reported results come from the
+gitignored local pattern config and must not be committed. The committed demo
+config is only for standalone reproducibility of the pipeline mechanics.
 
 ## Required Fields
 
@@ -131,5 +132,5 @@ They should look like plausible legitimate edge cases, not obvious fraud with
 the label flipped.
 
 The generated CSV belongs in `data/raw/transactions.csv`, which is gitignored.
-The project may commit generator code and documentation, but not the generated
-raw data file.
+The project may commit generator code, documentation, the public demo config,
+and split manifests, but not generated raw or split data files.
