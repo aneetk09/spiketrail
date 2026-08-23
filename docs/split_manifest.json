@@ -1,11 +1,11 @@
 {
-  "created_at_utc": "2026-08-23T18:13:08+00:00",
+  "created_at_utc": "2026-08-23T19:18:40+00:00",
   "seed": 42,
   "split": {
-    "method": "sklearn.model_selection.train_test_split",
+    "method": "sklearn.model_selection.GroupShuffleSplit",
     "train_size": 0.8,
     "test_size": 0.2,
-    "stratify": "label",
+    "group_key": "sequence_id",
     "shuffle": true
   },
   "data_visibility": {
@@ -22,18 +22,18 @@
   },
   "train": {
     "path": "data/train/train.csv",
-    "rows": 1600,
-    "clean_rows": 1536,
-    "fraud_rows": 64,
-    "fraud_ratio": 0.04,
-    "sha256": "e9d9977e7b736f18eb87afdfcdbcec4e442fd099324c8a8c0694c5b658b89c09"
+    "rows": 1608,
+    "clean_rows": 1543,
+    "fraud_rows": 65,
+    "fraud_ratio": 0.040423,
+    "sha256": "6044723e7972cc71e06ae1c944bd1588e5c3f6a9ce406ec6604e9586b571f22f"
   },
   "test": {
     "path": "data/test/test.csv",
-    "rows": 400,
-    "clean_rows": 384,
-    "fraud_rows": 16,
-    "fraud_ratio": 0.04,
-    "sha256": "4a20a6c64f1c3aaa7230cd632c606b85402a13903122ae94d29383e2a042b7a7"
+    "rows": 392,
+    "clean_rows": 377,
+    "fraud_rows": 15,
+    "fraud_ratio": 0.038265,
+    "sha256": "d5c3e791c43602cd0de8e73e69f2ae0054d2aba8cf883727783872c9742a2249"
   }
 }

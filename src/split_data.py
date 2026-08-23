@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GroupShuffleSplit
 
 from config import SEED
 
@@ -55,10 +55,10 @@ def write_split_manifest(
         .isoformat(),
         "seed": SEED,
         "split": {
-            "method": "sklearn.model_selection.train_test_split",
+            "method": "sklearn.model_selection.GroupShuffleSplit",
             "train_size": 0.8,
             "test_size": 0.2,
-            "stratify": "label",
+            "group_key": "sequence_id",
             "shuffle": True,
         },
         "data_visibility": {
@@ -98,13 +98,12 @@ def split_data(
         )
 
     raw = pd.read_csv(raw_path)
-    train, test = train_test_split(
-        raw,
-        test_size=0.2,
-        random_state=SEED,
-        stratify=raw["label"],
-        shuffle=True,
-    )
+    
+    splitter = GroupShuffleSplit(test_size=0.2, n_splits=1, random_state=SEED)
+    train_indices, test_indices = next(splitter.split(raw, groups=raw["sequence_id"]))
+    
+    train = raw.iloc[train_indices].copy()
+    test = raw.iloc[test_indices].copy()
 
     train = train.sort_values("timestamp").reset_index(drop=True)
     test = test.sort_values("timestamp").reset_index(drop=True)
