@@ -184,3 +184,7 @@ The final methodology will report the actual held-out metrics even if they are
 messy. The small held-out fraud count, expected to be around 16 cases, will be
 called out plainly because each missed or correctly caught fraud case can move
 the final percentages noticeably.
+
+## Failure Recovery: The Split Bug
+
+During Stage 5, the initial data split used a standard row-level `train_test_split` stratified by label. This inadvertently shattered multi-transaction sequences across the train and test sets. As a result, large cashout transactions in the test set lost their preceding small-burst context (which ended up in the train set), causing point-in-time features like velocity and burst ratio to fail and resulting in near-random test performance. The fix was to replace the row-level split with a group-aware split (`GroupShuffleSplit` keyed on `sequence_id`), ensuring entire sequences land strictly in either train or test to preserve chronological context for feature extraction.

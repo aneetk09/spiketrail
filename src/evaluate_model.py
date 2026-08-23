@@ -7,7 +7,14 @@ from typing import Any
 
 import joblib
 import pandas as pd
-from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
+from sklearn.metrics import (
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+    average_precision_score,
+)
 
 from src.features import FEATURE_COLUMNS, FeatureState, transform_features
 
@@ -51,6 +58,8 @@ def evaluate(
     precision = precision_score(y_true, y_pred, zero_division=0)
     recall = recall_score(y_true, y_pred, zero_division=0)
     f1 = f1_score(y_true, y_pred, zero_division=0)
+    roc_auc = roc_auc_score(y_true, probabilities)
+    pr_auc = average_precision_score(y_true, probabilities)
 
     return {
         "threshold": threshold,
@@ -58,6 +67,8 @@ def evaluate(
         "fraud_rows": int(y_true.sum()),
         "clean_rows": int((y_true == 0).sum()),
         "metrics": {
+            "roc_auc": round(float(roc_auc), 6),
+            "pr_auc": round(float(pr_auc), 6),
             "precision": round(float(precision), 6),
             "recall": round(float(recall), 6),
             "f1": round(float(f1), 6),
