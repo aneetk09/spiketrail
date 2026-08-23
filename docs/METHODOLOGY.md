@@ -216,3 +216,10 @@ Once the threshold was locked in, it was applied exactly once to the held-out te
 - **Confusion Matrix:** 11 True Positives, 54 False Positives, 323 True Negatives, 4 False Negatives.
 
 Despite the lower threshold, the model still missed 4 sophisticated fraud cases. The precision drop (to 17%) reflects the aggressive tuning toward recall, accepting roughly 5 false alarms to catch 1 real fraud—a tradeoff perfectly aligned with the ₹5,500 vs ₹300 cost reality.
+
+**Note on Test Set Cost vs. Tuning Cost:**
+It is important to note that the properly OOF-tuned threshold (`0.4335`) actually produced a higher expected cost on this specific 392-row test set (₹38,200) than both the naive `0.5` default (₹36,400) and the earlier improperly leaked threshold of `0.5514` (₹35,200). 
+
+This is not a regression—it is expected and mathematically correct. The leaked `0.5514` threshold was overfit to this one small test draw (only 15 fraud rows), effectively cheating to find the local minimum of this exact slice. The OOF threshold optimizes expected cost over the larger, much more stable train-fold distribution (~65 fraud rows). 
+
+Furthermore, the False Negative (FN) count stayed exactly at 4 across both `0.5514` and `0.4335` on the test set. The extra false positives incurred by the lower threshold bought no additional recall on this specific small sample. However, adhering to the OOF threshold is critical for real-world generalization; relying on a threshold tuned against the test set violates the core tenets of model building. Catching and correcting this discrepancy demonstrates the strict evaluation discipline necessary for a production fraud system.
