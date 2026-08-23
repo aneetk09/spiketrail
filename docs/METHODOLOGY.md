@@ -141,7 +141,9 @@ F1 = 2 * (0.60 * 0.75) / (0.60 + 0.75)
 F1 = 0.67
 ```
 
-## Worked Example At Project Scale
+## Hypothetical Worked Example At Project Scale
+
+*(Note: The following is a hypothetical teaching example created during Stage 1 to explain the evaluation vocabulary, not the actual Stage 8 results.)*
 
 Assume the full 2,000-transaction dataset has about 80 fraudulent transactions.
 The locked plan calls for an 80/20 stratified split, so the held-out test set
