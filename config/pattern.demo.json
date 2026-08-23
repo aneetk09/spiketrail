@@ -4,5 +4,9 @@
   "max_small_transaction_amount_inr": 120,
   "burst_window_minutes": 12,
   "large_transaction_followup_window_minutes": 45,
-  "min_large_transaction_amount_inr": 4500
+  "min_large_transaction_amount_inr": 4500,
+  "small_amount_min_fraction": 0.18,
+  "small_amount_max_fraction": 0.82,
+  "large_amount_max_multiplier": 2.4,
+  "large_amount_min_upper_bound_inr": 10000
 }

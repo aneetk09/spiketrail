@@ -17,6 +17,10 @@ class PatternConfig:
     burst_window_minutes: int
     large_transaction_followup_window_minutes: int
     min_large_transaction_amount_inr: float
+    small_amount_min_fraction: float
+    small_amount_max_fraction: float
+    large_amount_max_multiplier: float
+    large_amount_min_upper_bound_inr: float
 
 
 def load_pattern_config(path: Path | None = None) -> PatternConfig:
@@ -42,4 +46,8 @@ def load_pattern_config(path: Path | None = None) -> PatternConfig:
             raw["large_transaction_followup_window_minutes"]
         ),
         min_large_transaction_amount_inr=float(raw["min_large_transaction_amount_inr"]),
+        small_amount_min_fraction=float(raw["small_amount_min_fraction"]),
+        small_amount_max_fraction=float(raw["small_amount_max_fraction"]),
+        large_amount_max_multiplier=float(raw["large_amount_max_multiplier"]),
+        large_amount_min_upper_bound_inr=float(raw["large_amount_min_upper_bound_inr"]),
     )

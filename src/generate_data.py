@@ -62,13 +62,22 @@ def _normal_amount(rng: np.random.Generator) -> float:
 
 
 def _small_amount(rng: np.random.Generator, config: PatternConfig) -> float:
-    low = max(5.0, config.max_small_transaction_amount_inr * 0.12)
-    high = max(low + 1.0, config.max_small_transaction_amount_inr * 0.95)
+    low = max(
+        5.0,
+        config.max_small_transaction_amount_inr * config.small_amount_min_fraction,
+    )
+    high = max(
+        low + 1.0,
+        config.max_small_transaction_amount_inr * config.small_amount_max_fraction,
+    )
     return float(round(rng.uniform(low, high), 2))
 
 
 def _large_amount(rng: np.random.Generator, config: PatternConfig) -> float:
-    high = max(config.min_large_transaction_amount_inr * 3.0, 7_500)
+    high = max(
+        config.min_large_transaction_amount_inr * config.large_amount_max_multiplier,
+        config.large_amount_min_upper_bound_inr,
+    )
     return float(round(rng.uniform(config.min_large_transaction_amount_inr, high), 2))
 
 
