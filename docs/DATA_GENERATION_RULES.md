@@ -93,6 +93,8 @@ Ambiguous clean examples should include cases like:
   larger transaction.
 - A legitimate larger purchase with unrelated earlier small transactions that
   do not satisfy the private pattern config.
+- A rent/tuition-style legitimate larger purchase later the same day after
+  unrelated smaller activity from the same customer context.
 - Shared device/IP contexts that look mildly suspicious but do not complete the
   target sequence.
 - Busy customer activity that raises velocity-like features without becoming

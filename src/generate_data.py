@@ -108,7 +108,7 @@ def _generate_fraud_rows(
 
     for sequence_index in range(sequence_count):
         day = int(rng.integers(0, SIMULATED_DAYS))
-        start = _timestamp(rng, base, day=day, minute_floor=30)
+        start = _timestamp(rng, base, day=day, minute_floor=37)
         customer = _customer_id(1_000 + sequence_index)
         device = _device_id(8_000 + int(rng.integers(0, max(4, sequence_count // 2))))
         ip = _ip(40_000 + int(rng.integers(0, max(4, sequence_count // 2))))
@@ -167,7 +167,8 @@ def _generate_ambiguous_rows(
     sequence_index = 0
 
     while len(rows) < target_rows:
-        scenario = "small_only" if sequence_index % 2 == 0 else "large_with_history"
+        scenario_options = ("small_only", "large_with_history", "large_unrelated")
+        scenario = scenario_options[sequence_index % len(scenario_options)]
         customer = _customer_id(2_000 + sequence_index)
         device = _device_id(3_000 + int(rng.integers(0, 90)))
         ip = _ip(20_000 + int(rng.integers(0, 90)))
@@ -196,7 +197,7 @@ def _generate_ambiguous_rows(
                     start + pd.Timedelta(seconds=int(offset)),
                     0,
                 )
-        else:
+        elif scenario == "large_with_history":
             small_count = max(1, config.min_small_transactions_in_burst - 1)
             for offset in np.sort(
                 rng.integers(
@@ -233,6 +234,49 @@ def _generate_ambiguous_rows(
                     start + pd.Timedelta(minutes=outside_followup),
                     0,
                 )
+        else:
+            small_count = max(1, config.min_small_transactions_in_burst - 1)
+            early_offsets = np.sort(
+                rng.integers(
+                    0,
+                    max(1, config.burst_window_minutes * 60),
+                    size=small_count,
+                )
+            )
+            for offset in early_offsets:
+                if len(rows) >= target_rows:
+                    break
+                _append_row(
+                    rows,
+                    sequence,
+                    customer,
+                    device,
+                    ip,
+                    _small_amount(rng, config),
+                    start + pd.Timedelta(seconds=int(offset)),
+                    0,
+                )
+            if len(rows) < target_rows:
+                same_day_later = int(
+                    rng.integers(
+                        (
+                            config.burst_window_minutes
+                            + config.large_transaction_followup_window_minutes
+                            + 60
+                        ),
+                        8 * 60,
+                    )
+                )
+                _append_row(
+                    rows,
+                    sequence,
+                    customer,
+                    device,
+                    ip,
+                    _large_amount(rng, config),
+                    start + pd.Timedelta(minutes=same_day_later),
+                    0,
+                )
 
         sequence_index += 1
 
@@ -253,7 +297,7 @@ def _generate_normal_rows(
             rows,
             sequence,
             _customer_id(customer_index),
-            _device_id(customer_index + int(rng.integers(0, 30))),
+            _device_id(customer_index + int(rng.integers(0, 29))),
             _ip(customer_index + int(rng.integers(0, 80))),
             _normal_amount(rng),
             _timestamp(rng, base),

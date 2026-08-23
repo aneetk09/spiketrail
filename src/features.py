@@ -33,6 +33,7 @@ class FeatureState:
     global_amount_std: float
     velocity_window_minutes: int
     reuse_window_minutes: int
+    ratio_context_window_minutes: int
 
 
 def _require_columns(frame: pd.DataFrame, columns: Iterable[str]) -> None:
@@ -86,6 +87,7 @@ def fit_feature_state(
         global_amount_std=global_std,
         velocity_window_minutes=config.burst_window_minutes,
         reuse_window_minutes=24 * 60,
+        ratio_context_window_minutes=24 * 60,
     )
 
 
@@ -162,10 +164,11 @@ def add_burst_ratio(frame: pd.DataFrame, window_minutes: int) -> pd.Series:
             )
         ]
         if prior.empty:
-            values.append(1.0)
+            values.append(0.0)
             continue
         prior_average = float(prior["amount"].mean())
-        values.append(float(row["amount"] / prior_average) if prior_average else 1.0)
+        raw_ratio = float(row["amount"] / prior_average) if prior_average else 0.0
+        values.append(min(float(np.log1p(raw_ratio)), 8.0))
     return pd.Series(values, index=frame.index, dtype="float64")
 
 
@@ -185,7 +188,7 @@ def transform_features(frame: pd.DataFrame, state: FeatureState) -> pd.DataFrame
         prepared, state.reuse_window_minutes
     )
     features["burst_ratio"] = add_burst_ratio(
-        prepared, state.velocity_window_minutes
+        prepared, state.ratio_context_window_minutes
     )
     return features[["transaction_id", *FEATURE_COLUMNS, "label"]]
 
