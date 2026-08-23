@@ -102,6 +102,10 @@ Ambiguous clean examples should include cases like:
 
 Every ambiguous row still has `label = 0`.
 
+In the current generated training split, `amb_large_unrelated` is intentionally
+asymmetric: its small-transaction portion is often velocity-active, while its
+large-transaction portion is almost entirely velocity-isolated.
+
 ## Time And Identity Rules
 
 Timestamps must be spread across several simulated days so time-of-day features
