@@ -1,0 +1,39 @@
+{
+  "created_at_utc": "2026-08-23T17:59:07+00:00",
+  "seed": 42,
+  "split": {
+    "method": "sklearn.model_selection.train_test_split",
+    "train_size": 0.8,
+    "test_size": 0.2,
+    "stratify": "label",
+    "shuffle": true
+  },
+  "data_visibility": {
+    "raw_csv": "gitignored",
+    "train_csv": "gitignored",
+    "test_csv": "gitignored",
+    "reason": "Generated labeled transaction rows are not committed because they could reveal private fraud-pattern cutoffs."
+  },
+  "config_source_for_reported_results": "config/pattern.local.json, gitignored private config",
+  "raw": {
+    "path": "data/raw/transactions.csv",
+    "rows": 2000,
+    "sha256": "0847ed44f39229f8163e73780ae40964b58645ae728ac00f0b4cf6582424896f"
+  },
+  "train": {
+    "path": "data/train/train.csv",
+    "rows": 1600,
+    "clean_rows": 1536,
+    "fraud_rows": 64,
+    "fraud_ratio": 0.04,
+    "sha256": "afe3b60e26c8ab278007059c9ab35af38cec76314f106f77c510408bfe21097d"
+  },
+  "test": {
+    "path": "data/test/test.csv",
+    "rows": 400,
+    "clean_rows": 384,
+    "fraud_rows": 16,
+    "fraud_ratio": 0.04,
+    "sha256": "768fc2ff8d10ae085cb76a42b8b080126256d2dabf16926bb47c8dd1ead55369"
+  }
+}
